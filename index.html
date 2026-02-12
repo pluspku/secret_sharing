@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#1a1d24" />
+  <title>秘密共享 · Offline-First</title>
+  <link rel="manifest" href="manifest.json" />
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <h1>秘密共享</h1>
+      <p class="subtitle">门限拆分 · 本地加密 · 离线可用</p>
+      <div class="offline-badge" id="offlineBadge" aria-hidden="true">离线运行中</div>
+    </header>
+
+    <nav class="tabs" role="tablist">
+      <button type="button" class="tab active" role="tab" aria-selected="true" data-panel="split">拆分</button>
+      <button type="button" class="tab" role="tab" aria-selected="false" data-panel="combine">还原</button>
+    </nav>
+
+    <main class="panels">
+      <section id="panel-split" class="panel active" role="tabpanel">
+        <form id="formSplit" class="form">
+          <label>
+            <span>秘密内容</span>
+            <textarea name="secret" rows="3" placeholder="输入要加密并拆分的文本…" required></textarea>
+          </label>
+          <div class="row">
+            <label>
+              <span>门限 k（至少几人可还原）</span>
+              <input type="number" name="threshold" min="2" max="255" value="2" required />
+            </label>
+            <label>
+              <span>总份数 n</span>
+              <input type="number" name="total" min="2" max="255" value="3" required />
+            </label>
+          </div>
+          <button type="submit" class="btn primary">加密并拆分</button>
+        </form>
+        <div id="splitResult" class="result" hidden>
+          <h3>拆分结果</h3>
+          <p class="meta">门限 <strong id="splitMeta"></strong></p>
+          <div class="output">
+            <label>密钥片段（请妥善保管，至少 k 份可还原）</label>
+            <textarea id="splitShares" readonly rows="6"></textarea>
+          </div>
+          <div class="output">
+            <label>加密包 Blob（可交给任意一方保管）</label>
+            <textarea id="splitBlob" readonly rows="4"></textarea>
+          </div>
+        </div>
+      </section>
+
+      <section id="panel-combine" class="panel" role="tabpanel">
+        <form id="formCombine" class="form">
+          <label>
+            <span>加密包 Blob（JSON 或从文件粘贴）</span>
+            <textarea name="blob" rows="4" placeholder='{"nonce":"...","tag":"...","ciphertext":"..."}' required></textarea>
+          </label>
+          <label>
+            <span>密钥片段（每行一个，格式 index:hex，至少 k 个）</span>
+            <textarea name="shares" rows="5" placeholder="1:a91be6f4b1c8...&#10;2:7ef00c5a3c01..."></textarea>
+          </label>
+          <button type="submit" class="btn primary">还原秘密</button>
+        </form>
+        <div id="combineResult" class="result" hidden>
+          <h3>还原结果</h3>
+          <div class="output">
+            <textarea id="combinePlain" readonly rows="4"></textarea>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>数据仅在本地处理，不上传服务器 · 支持离线使用</p>
+    </footer>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
